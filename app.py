@@ -1,22 +1,22 @@
-from flask import Flask, render_template
+from flask import Flask, request, render_template, make_response
 
-app = Flask(__name__) # Flask constructor
+app = Flask(__name__) 
+@app.route('/') 
 
-@app.route('/')  # route decorator
-def index():
-  return render_template('index.html')  # render template
+def index(): 
+    return render_template('index.html') 
 
-@app.route('/hello_world')  # route decorator
-def hello_world():
-  return "Hello, World!"
+@app.route('/setcookie', methods = ['POST', 'GET']) 
+def setcookie(): 
+    if request.method == 'POST': 
+        user = request.form['nm'] 
+        resp = make_response(render_template('cookie.html')) 
+        resp.set_cookie('userID', user) 
+        return resp 
 
-@app.route("/hello/<name>")  # dynamic route
-def hello(name):
-  return f"Hello, {name}!"
-
-@app.route('/blog/<int:post_id>')  # dynamic route with integer
-def show_blog(post_id):
-  return f"Blog Post ID: {post_id}"
-
-if __name__ == '__main__':
-  app.run(debug=True)  # run the Flask app
+@app.route('/getcookie') 
+def getcookie(): 
+    name = request.cookies.get('userID') 
+    return '<h1>welcome '+name+'</h1>'
+if __name__ == "__main__":
+    app.run()
